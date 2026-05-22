@@ -681,6 +681,11 @@ function connect() {
   socket.on('error_msg', (msg) => {
     showToast(msg, 'bad');
     showError('home-err', msg);
+    // Reset any disabled buttons
+    document.getElementById('btn-join').disabled = false;
+    document.getElementById('btn-join').textContent = 'Join Room';
+    document.getElementById('btn-create').disabled = false;
+    document.getElementById('btn-create').textContent = 'Create Room';
   });
 }
 
@@ -709,8 +714,24 @@ function showError(id, msg) {
 document.getElementById('btn-create').addEventListener('click', () => {
   const name = document.getElementById('inp-name').value.trim();
   if (!name) return showError('home-err', 'Enter your name');
-  if (!socket) connect();
-  socket.emit('create_room', { name });
+
+  const btn = document.getElementById('btn-create');
+  btn.textContent = 'Creating...';
+  btn.disabled = true;
+
+  const reset = () => { btn.textContent = 'Create Room'; btn.disabled = false; };
+
+  if (!socket || !socket.connected) {
+    connect();
+    socket.once('connect', () => {
+      socket.emit('create_room', { name });
+      reset();
+    });
+    setTimeout(() => { reset(); showError('home-err', 'No response — try again'); }, 5000);
+  } else {
+    socket.emit('create_room', { name });
+    reset();
+  }
 });
 
 document.getElementById('btn-join').addEventListener('click', () => {
@@ -718,8 +739,32 @@ document.getElementById('btn-join').addEventListener('click', () => {
   const code = document.getElementById('inp-code').value.trim().toUpperCase();
   if (!name) return showError('home-err', 'Enter your name');
   if (code.length !== 6) return showError('home-err', 'Enter a 6-letter code');
-  if (!socket) connect();
-  socket.emit('join_room', { name, code });
+
+  const btn = document.getElementById('btn-join');
+  btn.textContent = 'Joining...';
+  btn.disabled = true;
+
+  // Reset button after 5s if nothing happens
+  const reset = setTimeout(() => {
+    btn.textContent = 'Join Room';
+    btn.disabled = false;
+    showError('home-err', 'No response from server — try again');
+  }, 5000);
+
+  if (!socket || !socket.connected) {
+    connect();
+    socket.once('connect', () => {
+      clearTimeout(reset);
+      socket.emit('join_room', { name, code });
+      btn.textContent = 'Join Room';
+      btn.disabled = false;
+    });
+  } else {
+    clearTimeout(reset);
+    socket.emit('join_room', { name, code });
+    btn.textContent = 'Join Room';
+    btn.disabled = false;
+  }
 });
 
 document.getElementById('inp-code').addEventListener('input', e => {

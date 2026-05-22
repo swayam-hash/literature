@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Literature</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1410;
+  --paper: #f5f0e8;
+  --paper2: #ede7d9;
+  --paper3: #e4dcc8;
+  --gold: #b8860b;
+  --gold2: #d4a017;
+  --gold3: #f0c040;
+  --red: #8b1a1a;
+  --red2: #c0392b;
+  --team-a: #1a3a6b;
+  --team-b: #6b1a1a;
+  --team-a-light: #d0dff5;
+  --team-b-light: #f5d0d0;
+  --muted: #7a6e5a;
+  --border: #c8b896;
+  --shadow: rgba(26,20,16,0.15);
+  --r: 6px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Crimson Pro', Georgia, serif;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse at 0% 0%, rgba(184,134,11,.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 100%, rgba(139,26,26,.05) 0%, transparent 50%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b8860b' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+
+/* ── HOME ── */
+#home-screen { gap: 40px; }
+
+.logo-wrap { text-align: center; }
+.logo-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(3rem, 10vw, 5.5rem);
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: var(--ink);
+  text-shadow: 2px 2px 0 var(--gold), 3px 3px 0 rgba(184,134,11,.3);
+  line-height: 1;
+}
+.logo-suits {
+  display: flex; gap: 16px; justify-content: center;
+  font-size: 1.8rem; margin-top: 10px; letter-spacing: 8px;
+}
+.logo-suits .s, .logo-suits .c { color: var(--ink); }
+.logo-suits .h, .logo-suits .d { color: var(--red2); }
+.logo-sub {
+  font-family: 'Crimson Pro', serif; font-style: italic;
+  font-size: 1rem; color: var(--muted); letter-spacing: 3px;
+  text-transform: uppercase; margin-top: 6px;
+}
+
+.home-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 32px;
+  width: 100%; max-width: 400px;
+  box-shadow: 0 4px 24px var(--shadow), 0 1px 0 var(--gold) inset;
+  display: flex; flex-direction: column; gap: 20px;
+}
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label {
+  font-family: 'Cinzel', serif; font-size: .65rem;
+  letter-spacing: 3px; color: var(--muted); text-transform: uppercase;
+}
+input[type=text] {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  font-family: 'Crimson Pro', serif; font-size: 1.1rem;
+  padding: 10px 14px; border-radius: var(--r); width: 100%;
+  outline: none; transition: border-color .2s, box-shadow .2s;
+}
+input[type=text]:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(184,134,11,.12);
+}
+input[type=text]::placeholder { color: #b0a898; font-style: italic; }
+
+.divider {
+  display: flex; align-items: center; gap: 12px;
+  color: var(--muted); font-style: italic; font-size: .9rem;
+}
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.btn {
+  font-family: 'Cinzel', serif; font-size: .7rem;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 12px 20px; border-radius: var(--r); border: none;
+  cursor: pointer; transition: all .2s; width: 100%; font-weight: 600;
+}
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(184,134,11,.3);
+}
+.btn-gold:hover:not(:disabled) { background: linear-gradient(135deg, var(--gold2), var(--gold3)); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(184,134,11,.4); }
+.btn-outline {
+  background: transparent; color: var(--ink);
+  border: 1.5px solid var(--border);
+}
+.btn-outline:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+.btn-ghost { background: transparent; color: var(--muted); border: none; font-size: .65rem; width: auto; padding: 6px 10px; }
+.btn-ghost:hover { color: var(--ink); }
+.btn-sm { padding: 8px 14px; font-size: .65rem; width: auto; }
+.btn-red { background: transparent; color: var(--red); border: 1.5px solid var(--red); }
+.btn-red:hover:not(:disabled) { background: var(--red); color: #fff; }
+.btn-a { background: var(--team-a); color: #fff; border: none; }
+.btn-a:hover:not(:disabled) { filter: brightness(1.2); }
+.btn-b { background: var(--team-b); color: #fff; border: none; }
+.btn-b:hover:not(:disabled) { filter: brightness(1.2); }
+
+.error-msg { font-size: .85rem; color: var(--red2); text-align: center; font-style: italic; }
+
+/* ── LOBBY ── */
+#lobby-screen { justify-content: flex-start; padding-top: 32px; align-items: center; }
+.lobby-wrap { width: 100%; max-width: 820px; display: flex; flex-direction: column; gap: 20px; }
+
+.lobby-top {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.lobby-top h2 {
+  font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px;
+}
+.code-badge {
+  background: var(--ink); color: var(--gold3);
+  font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 6px;
+  padding: 8px 18px; border-radius: var(--r); cursor: pointer;
+  transition: opacity .2s; user-select: all;
+}
+.code-badge:hover { opacity: .85; }
+.code-label { font-size: .65rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; font-family: 'Cinzel', serif; }
+
+.panel {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--r); padding: 20px;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.panel-title {
+  font-family: 'Cinzel', serif; font-size: .7rem;
+  letter-spacing: 3px; color: var(--muted); text-transform: uppercase;
+  margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.teams-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.team-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.team-name { font-family: 'Cinzel', serif; font-size: .85rem; font-weight: 700; letter-spacing: 2px; }
+.team-name.a { color: var(--team-a); }
+.team-name.b { color: var(--team-b); }
+.team-count { font-size: .8rem; color: var(--muted); font-style: italic; }
+
+.player-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; border-radius: 4px; margin-bottom: 6px;
+  border: 1px solid var(--border); background: var(--paper);
+  transition: border-color .15s;
+}
+.player-row.me { border-color: var(--gold); background: rgba(184,134,11,.05); }
+.player-name-text { font-size: 1rem; }
+.player-badges { display: flex; gap: 6px; align-items: center; }
+.badge {
+  font-family: 'Cinzel', serif; font-size: .55rem;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 3px;
+}
+.badge-host { background: rgba(184,134,11,.15); color: var(--gold); border: 1px solid rgba(184,134,11,.3); }
+.badge-you { background: rgba(26,58,107,.1); color: var(--team-a); border: 1px solid rgba(26,58,107,.2); }
+
+.unassigned-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.unassigned-chip {
+  background: var(--paper); border: 1px solid var(--border);
+  border-radius: 4px; padding: 6px 10px; font-size: .9rem;
+  display: flex; align-items: center; gap: 10px;
+}
+.assign-btns { display: flex; gap: 4px; }
+.assign-btn {
+  font-family: 'Cinzel', serif; font-size: .55rem; letter-spacing: 1px;
+  padding: 3px 9px; border-radius: 3px; border: 1px solid; cursor: pointer;
+  transition: all .15s; text-transform: uppercase;
+}
+.assign-btn.a { color: var(--team-a); border-color: var(--team-a); background: transparent; }
+.assign-btn.a:hover { background: var(--team-a); color: #fff; }
+.assign-btn.b { color: var(--team-b); border-color: var(--team-b); background: transparent; }
+.assign-btn.b:hover { background: var(--team-b); color: #fff; }
+
+.lobby-status { font-style: italic; color: var(--muted); font-size: .95rem; text-align: center; }
+.lobby-footer { display: flex; justify-content: flex-end; }
+
+/* ── GAME SCREEN ── */
+#game-screen { justify-content: flex-start; padding: 0; align-items: stretch; }
+.game-wrap { display: flex; flex-direction: column; min-height: 100vh; padding: 12px; gap: 10px; max-width: 1100px; margin: 0 auto; width: 100%; }
+
+/* Score bar */
+.score-bar {
+  background: var(--ink); color: var(--paper);
+  border-radius: var(--r); padding: 12px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 10px;
+}
+.score-side { display: flex; align-items: center; gap: 12px; }
+.score-label { font-family: 'Cinzel', serif; font-size: .65rem; letter-spacing: 3px; text-transform: uppercase; opacity: .7; }
+.score-label.a { color: #a0c0ff; }
+.score-label.b { color: #ffa0a0; }
+.score-num { font-family: 'Cinzel', serif; font-size: 2.2rem; font-weight: 900; line-height: 1; }
+.score-num.a { color: #a0c0ff; }
+.score-num.b { color: #ffa0a0; }
+.turn-badge {
+  font-family: 'Cinzel', serif; font-size: .7rem; letter-spacing: 1px;
+  text-align: center; line-height: 1.6;
+}
+.turn-badge .turn-name { color: var(--gold3); font-weight: 700; }
+
+/* Won sets */
+.sets-strip {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--r); padding: 10px 14px;
+}
+.sets-strip-inner { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.set-pill {
+  font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: 1px;
+  padding: 3px 10px; border-radius: 3px; border: 1px solid; text-transform: uppercase;
+}
+.set-pill.a { background: var(--team-a-light); color: var(--team-a); border-color: var(--team-a); }
+.set-pill.b { background: var(--team-b-light); color: var(--team-b); border-color: var(--team-b); }
+.set-pill.none { background: var(--paper2); color: var(--muted); border-color: var(--border); text-decoration: line-through; }
+
+/* Players */
+.players-bar {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--r); padding: 10px 14px;
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.seat {
+  flex: 1; min-width: 90px; max-width: 160px;
+  border: 1.5px solid var(--border); border-radius: var(--r);
+  padding: 8px 10px; background: var(--paper); cursor: default;
+  transition: all .15s; position: relative; text-align: center;
+}
+.seat.turn { border-color: var(--gold); background: rgba(184,134,11,.06); box-shadow: 0 2px 8px rgba(184,134,11,.2); }
+.seat.team-a { border-color: rgba(26,58,107,.3); }
+.seat.team-b { border-color: rgba(107,26,26,.3); }
+.seat.me { background: var(--paper2); }
+.seat.selectable { cursor: pointer; }
+.seat.selectable:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 4px 12px var(--shadow); }
+.seat.selected-opp { border-color: var(--gold); background: rgba(184,134,11,.1); box-shadow: 0 0 0 2px var(--gold); }
+.seat-name { font-size: .9rem; font-weight: 600; }
+.seat-team { font-family: 'Cinzel', serif; font-size: .55rem; letter-spacing: 2px; margin-top: 2px; }
+.seat-team.a { color: var(--team-a); }
+.seat-team.b { color: var(--team-b); }
+.seat-count { font-size: .75rem; color: var(--muted); margin-top: 2px; font-style: italic; }
+.turn-dot {
+  position: absolute; top: 5px; right: 5px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--gold2); box-shadow: 0 0 6px var(--gold2);
+}
+.disconnected-badge { font-size: .55rem; color: var(--red2); font-style: italic; }
+
+/* Hand */
+.hand-panel {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--r); padding: 14px;
+}
+.section-head {
+  font-family: 'Cinzel', serif; font-size: .65rem; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.cards-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.card {
+  background: #fff; border: 1.5px solid var(--border);
+  border-radius: 5px; padding: 8px 10px; min-width: 48px;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  font-family: 'Crimson Pro', serif; cursor: default;
+  transition: all .15s; user-select: none;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+.card.red { color: var(--red2); }
+.card.black { color: var(--ink); }
+.card-rank { font-size: 1rem; font-weight: 600; line-height: 1; }
+.card-suit { font-size: .8rem; line-height: 1; }
+.card.dim { opacity: .3; }
+.card.selectable { cursor: pointer; }
+.card.selectable:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 6px 16px var(--shadow); }
+.card.selected { border-color: var(--gold); background: rgba(184,134,11,.06); transform: translateY(-4px); box-shadow: 0 6px 16px rgba(184,134,11,.2); }
+
+/* Action panel */
+.action-panel {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px;
+}
+.action-head {
+  font-family: 'Cinzel', serif; font-size: .8rem; letter-spacing: 2px;
+  font-weight: 700; margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border); text-transform: uppercase;
+}
+.steps { display: flex; flex-direction: column; gap: 14px; }
+.step { display: flex; flex-direction: column; gap: 8px; }
+.step-label {
+  font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: 2px;
+  color: var(--muted); text-transform: uppercase;
+}
+.step-label b { color: var(--gold); }
+
+.set-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.set-chip-btn {
+  background: var(--paper); border: 1px solid var(--border);
+  border-radius: 4px; padding: 6px 12px;
+  font-family: 'Cinzel', serif; font-size: .65rem; letter-spacing: 1px;
+  color: var(--ink); cursor: pointer; transition: all .15s; text-transform: uppercase;
+}
+.set-chip-btn:hover { border-color: var(--gold); color: var(--gold); }
+.set-chip-btn.sel { border-color: var(--gold); background: rgba(184,134,11,.08); color: var(--gold); }
+
+.waiting-text {
+  font-style: italic; color: var(--muted); font-size: 1rem; text-align: center; padding: 8px 0;
+}
+.waiting-text b { color: var(--ink); font-style: normal; }
+
+/* Declare section */
+.declare-panel {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--r); padding: 14px;
+}
+.declare-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.declare-chip {
+  background: var(--paper); border: 1px solid var(--border);
+  border-radius: 4px; padding: 6px 12px;
+  font-family: 'Cinzel', serif; font-size: .65rem; letter-spacing: 1px;
+  color: var(--ink); cursor: pointer; transition: all .15s; text-transform: uppercase;
+}
+.declare-chip:hover { border-color: #2a7a2a; color: #2a7a2a; }
+
+/* Declare modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(26,20,16,.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100; padding: 20px; backdrop-filter: blur(3px);
+}
+.modal {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--r); padding: 28px; width: 100%; max-width: 540px;
+  box-shadow: 0 16px 48px rgba(26,20,16,.3);
+  display: flex; flex-direction: column; gap: 18px;
+}
+.modal h3 {
+  font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 700; letter-spacing: 1px;
+}
+.modal-note { font-size: .9rem; color: var(--muted); font-style: italic; }
+.declare-rows { display: flex; flex-direction: column; gap: 8px; }
+.declare-row {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--paper); border-radius: 4px; padding: 8px 12px;
+  border: 1px solid var(--border);
+}
+.declare-card-label { font-size: 1rem; font-weight: 600; }
+.declare-card-label.red { color: var(--red2); }
+.declare-card-label.black { color: var(--ink); }
+.declare-select {
+  background: #fff; border: 1px solid var(--border); color: var(--ink);
+  font-family: 'Crimson Pro', serif; font-size: .95rem;
+  padding: 5px 10px; border-radius: 4px; outline: none; cursor: pointer;
+  transition: border-color .15s;
+}
+.declare-select:focus { border-color: var(--gold); }
+.modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
+
+/* Log */
+.log-panel {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--r); padding: 14px;
+}
+.log-list {
+  display: flex; flex-direction: column; gap: 4px;
+  max-height: 130px; overflow-y: auto;
+}
+.log-entry {
+  font-size: .9rem; color: var(--muted); line-height: 1.5;
+  padding: 3px 0; border-bottom: 1px solid var(--paper2);
+}
+.log-entry:last-child { border-bottom: none; }
+.log-entry b { color: var(--ink); font-weight: 600; }
+.log-entry .log-card { color: var(--gold); font-weight: 600; }
+
+/* Result */
+#result-screen { gap: 32px; }
+.result-card {
+  background: #fff; border: 2px solid var(--gold);
+  border-radius: var(--r); padding: 48px 40px; text-align: center;
+  max-width: 460px; width: 100%;
+  box-shadow: 0 8px 32px var(--shadow);
+}
+.result-title { font-family: 'Cinzel', serif; font-size: 2.5rem; font-weight: 900; letter-spacing: 2px; margin-bottom: 4px; }
+.result-sub { font-style: italic; color: var(--muted); font-size: 1rem; margin-bottom: 28px; }
+.result-scores { display: flex; justify-content: center; gap: 32px; margin-bottom: 32px; }
+.result-score-side { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.result-score-num { font-family: 'Cinzel', serif; font-size: 3.5rem; font-weight: 900; line-height: 1; }
+.result-score-num.a { color: var(--team-a); }
+.result-score-num.b { color: var(--team-b); }
+.result-score-label { font-family: 'Cinzel', serif; font-size: .65rem; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; }
+
+/* Toast */
+.toast {
+  position: fixed; top: 18px; left: 50%; transform: translateX(-50%);
+  padding: 10px 20px; border-radius: var(--r); font-size: .9rem;
+  z-index: 200; opacity: 0; transition: opacity .25s; pointer-events: none;
+  max-width: 90vw; text-align: center; font-style: italic;
+  border: 1px solid; background: #fff;
+}
+.toast.show { opacity: 1; }
+.toast.good { border-color: #2a7a2a; color: #2a7a2a; }
+.toast.bad { border-color: var(--red2); color: var(--red2); }
+.toast.info { border-color: var(--gold); color: var(--gold); }
+
+.hidden { display: none !important; }
+
+@media (max-width: 600px) {
+  .teams-grid { grid-template-columns: 1fr; }
+  .game-wrap { padding: 8px; gap: 8px; }
+  .score-bar { padding: 10px 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="home-screen" class="screen active">
+  <div class="logo-wrap">
+    <div class="logo-title">LITERATURE</div>
+    <div class="logo-suits">
+      <span class="s">♠</span><span class="h">♥</span>
+      <span class="d">♦</span><span class="c">♣</span>
+    </div>
+    <div class="logo-sub">The Card Game</div>
+  </div>
+  <div class="home-card">
+    <div class="field">
+      <label>Your Name</label>
+      <input type="text" id="inp-name" placeholder="Enter your name" maxlength="20">
+    </div>
+    <button class="btn btn-gold" id="btn-create">Create Room</button>
+    <div class="divider">or join</div>
+    <div class="field">
+      <label>Room Code</label>
+      <input type="text" id="inp-code" placeholder="6-letter code" maxlength="6" style="text-transform:uppercase;letter-spacing:4px;font-family:'Cinzel',serif">
+    </div>
+    <button class="btn btn-outline" id="btn-join">Join Room</button>
+    <p class="error-msg hidden" id="home-err"></p>
+  </div>
+</div>
+
+<!-- LOBBY -->
+<div id="lobby-screen" class="screen" style="justify-content:flex-start;padding-top:32px">
+  <div class="lobby-wrap">
+    <div class="lobby-top">
+      <h2>Lobby</h2>
+      <div>
+        <div class="code-label">Room Code — click to copy</div>
+        <div class="code-badge" id="code-display" title="Click to copy">——————</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Unassigned Players</div>
+      <div class="unassigned-chips" id="unassigned-list">
+        <span style="font-style:italic;color:var(--muted);font-size:.9rem">None yet…</span>
+      </div>
+    </div>
+
+    <div class="teams-grid">
+      <div class="panel">
+        <div class="team-header">
+          <span class="team-name a">Team A</span>
+          <span class="team-count" id="count-a">0 / 3</span>
+        </div>
+        <div id="list-a"></div>
+      </div>
+      <div class="panel">
+        <div class="team-header">
+          <span class="team-name b">Team B</span>
+          <span class="team-count" id="count-b">0 / 3</span>
+        </div>
+        <div id="list-b"></div>
+      </div>
+    </div>
+
+    <p class="lobby-status" id="lobby-status">Waiting for players…</p>
+    <div class="lobby-footer">
+      <button class="btn btn-gold hidden" id="btn-start" style="max-width:180px">Start Game</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="game-screen" class="screen">
+  <div class="game-wrap">
+    <div class="score-bar">
+      <div class="score-side">
+        <span class="score-label a">Team A</span>
+        <span class="score-num a" id="score-a">0</span>
+      </div>
+      <div class="turn-badge" id="turn-badge">—</div>
+      <div class="score-side" style="flex-direction:row-reverse">
+        <span class="score-label b">Team B</span>
+        <span class="score-num b" id="score-b">0</span>
+      </div>
+    </div>
+
+    <div class="sets-strip">
+      <div class="section-head" style="margin-bottom:8px">Sets Won</div>
+      <div class="sets-strip-inner" id="sets-strip"></div>
+    </div>
+
+    <div class="players-bar" id="players-bar"></div>
+
+    <div class="hand-panel">
+      <div class="section-head">
+        <span>Your Hand</span>
+        <span id="hand-count" style="font-style:italic">0 cards</span>
+      </div>
+      <div class="cards-row" id="my-hand"></div>
+    </div>
+
+    <div class="action-panel" id="action-panel">
+      <div class="action-head">Your Turn — Ask for a Card</div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-label">Step 1 · <b>Choose a set</b></div>
+          <div class="set-chips" id="ask-sets"></div>
+        </div>
+        <div class="step">
+          <div class="step-label">Step 2 · <b>Choose a card to ask for</b></div>
+          <div class="cards-row" id="ask-cards"></div>
+        </div>
+        <div class="step">
+          <div class="step-label">Step 3 · <b>Choose an opponent</b> (click their name above)</div>
+          <div id="opp-display" style="font-size:.9rem;font-style:italic;color:var(--muted)">No opponent selected</div>
+        </div>
+        <div class="step">
+          <button class="btn btn-gold hidden" id="btn-ask" style="max-width:180px">Ask!</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-panel hidden" id="waiting-panel">
+      <div class="waiting-text" id="waiting-text">Waiting for your turn…</div>
+    </div>
+
+    <div class="declare-panel">
+      <div class="section-head" style="margin-bottom:10px">
+        <span>Declare a Set</span>
+        <span style="font-style:italic;font-size:.8rem;color:var(--muted)">Available anytime</span>
+      </div>
+      <div class="declare-chips" id="declare-chips"></div>
+    </div>
+
+    <div class="log-panel">
+      <div class="section-head" style="margin-bottom:8px">Game Log</div>
+      <div class="log-list" id="log-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="result-screen" class="screen">
+  <div class="result-card">
+    <div class="result-title" id="result-title">Game Over</div>
+    <div class="result-sub" id="result-sub"></div>
+    <div class="result-scores">
+      <div class="result-score-side">
+        <span class="result-score-num a" id="res-a">0</span>
+        <span class="result-score-label" style="color:var(--team-a)">Team A</span>
+      </div>
+      <div style="align-self:center;color:var(--muted);font-family:'Cinzel',serif;font-size:1.5rem">—</div>
+      <div class="result-score-side">
+        <span class="result-score-num b" id="res-b">0</span>
+        <span class="result-score-label" style="color:var(--team-b)">Team B</span>
+      </div>
+    </div>
+    <button class="btn btn-outline" id="btn-again">Play Again</button>
+  </div>
+</div>
+
+<!-- Declare Modal -->
+<div class="modal-overlay hidden" id="modal-overlay">
+  <div class="modal">
+    <h3>Declare: <span id="modal-set-name"></span></h3>
+    <p class="modal-note">Assign each card to a teammate. Get them all right to win the set.</p>
+    <div class="declare-rows" id="modal-rows"></div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost btn-sm" id="btn-modal-cancel">Cancel</button>
+      <button class="btn btn-gold btn-sm" id="btn-modal-confirm">Declare!</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+// ── CARD HELPERS ──
+const SUIT_SYM = { S:'♠', H:'♥', D:'♦', C:'♣' };
+const SUITS = ['S','H','D','C'];
+const RANKS_LOW = ['A','2','3','4','5','6'];
+const RANKS_HIGH = ['8','9','10','J','Q','K'];
+const SETS = [
+  ...SUITS.map(s => ({ id:`low_${s}`, name:`Low ${SUIT_SYM[s]}`, cards: RANKS_LOW.map(r=>r+s) })),
+  ...SUITS.map(s => ({ id:`high_${s}`, name:`High ${SUIT_SYM[s]}`, cards: RANKS_HIGH.map(r=>r+s) })),
+  { id:'sevens_jokers', name:'7s & Jokers', cards:['7S','7H','7D','7C','RJ','BJ'] }
+];
+const SET_MAP = {};
+SETS.forEach(s => s.cards.forEach(c => SET_MAP[c] = s.id));
+
+function cardInfo(card) {
+  if (card === 'RJ') return { rank:'🃏', suit:'Red', cls:'red', label:'Red Joker' };
+  if (card === 'BJ') return { rank:'🃏', suit:'Blk', cls:'black', label:'Black Joker' };
+  const suit = card.slice(-1), rank = card.slice(0,-1);
+  const isRed = suit === 'H' || suit === 'D';
+  return { rank, suit: SUIT_SYM[suit], cls: isRed?'red':'black', label:`${rank}${SUIT_SYM[suit]}` };
+}
+
+function cardEl(card, opts={}) {
+  const d = cardInfo(card);
+  const div = document.createElement('div');
+  div.className = `card ${d.cls}${opts.dim?' dim':''}${opts.selectable?' selectable':''}${opts.selected?' selected':''}`;
+  div.dataset.card = card;
+  div.innerHTML = `<div class="card-rank">${d.rank}</div><div class="card-suit">${d.suit}</div>`;
+  return div;
+}
+
+// ── STATE ──
+let socket;
+let myId = null, myRoom = null, isHost = false;
+let selSet = null, selCard = null, selOpp = null;
+let declareSetId = null;
+
+// ── CONNECT ──
+function connect() {
+  socket = io();
+
+  socket.on('connect', () => { myId = socket.id; });
+
+  socket.on('joined_room', ({ code, playerId }) => {
+    myId = playerId;
+    document.getElementById('code-display').textContent = code;
+    showScreen('lobby-screen');
+  });
+
+  socket.on('room_update', (state) => {
+    myRoom = state;
+    isHost = state.hostId === myId;
+    if (state.phase === 'lobby') renderLobby();
+    else if (state.phase === 'playing') { showScreen('game-screen'); renderGame(); }
+    else if (state.phase === 'ended') { showScreen('result-screen'); renderResult(); }
+  });
+
+  socket.on('error_msg', (msg) => {
+    showToast(msg, 'bad');
+    showError('home-err', msg);
+  });
+}
+
+// ── SCREENS ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showToast(msg, type='info', ms=2800) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), ms);
+}
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  setTimeout(() => el.classList.add('hidden'), 3500);
+}
+
+// ── HOME ──
+document.getElementById('btn-create').addEventListener('click', () => {
+  const name = document.getElementById('inp-name').value.trim();
+  if (!name) return showError('home-err', 'Enter your name');
+  if (!socket) connect();
+  socket.emit('create_room', { name });
+});
+
+document.getElementById('btn-join').addEventListener('click', () => {
+  const name = document.getElementById('inp-name').value.trim();
+  const code = document.getElementById('inp-code').value.trim().toUpperCase();
+  if (!name) return showError('home-err', 'Enter your name');
+  if (code.length !== 6) return showError('home-err', 'Enter a 6-letter code');
+  if (!socket) connect();
+  socket.emit('join_room', { name, code });
+});
+
+document.getElementById('inp-code').addEventListener('input', e => {
+  e.target.value = e.target.value.toUpperCase();
+});
+
+document.getElementById('code-display').addEventListener('click', () => {
+  const code = document.getElementById('code-display').textContent;
+  navigator.clipboard.writeText(code).then(() => showToast('Code copied!', 'info'));
+});
+
+// ── LOBBY ──
+function renderLobby() {
+  const { players, playerOrder, hostId } = myRoom;
+  const pids = playerOrder;
+  const teamA = pids.filter(id => players[id]?.team === 'A');
+  const teamB = pids.filter(id => players[id]?.team === 'B');
+  const unassigned = pids.filter(id => !players[id]?.team);
+
+  // Unassigned
+  const ul = document.getElementById('unassigned-list');
+  ul.innerHTML = '';
+  if (unassigned.length === 0) {
+    ul.innerHTML = '<span style="font-style:italic;color:var(--muted);font-size:.9rem">All assigned!</span>';
+  } else {
+    unassigned.forEach(pid => {
+      const p = players[pid];
+      const chip = document.createElement('div');
+      chip.className = 'unassigned-chip';
+      const isMe = pid === myId;
+      chip.innerHTML = `<span>${p.name}${isMe?' <em style="color:var(--muted)">(you)</em>':''}</span>`;
+      if (isHost) {
+        chip.innerHTML += `
+          <div class="assign-btns">
+            <button class="assign-btn a" onclick="socket.emit('assign_team',{targetId:'${pid}',team:'A'})">A</button>
+            <button class="assign-btn b" onclick="socket.emit('assign_team',{targetId:'${pid}',team:'B'})">B</button>
+          </div>`;
+      }
+      ul.appendChild(chip);
+    });
+  }
+
+  // Teams
+  ['A','B'].forEach(t => {
+    const list = document.getElementById(`list-${t.toLowerCase()}`);
+    list.innerHTML = '';
+    const tp = pids.filter(id => players[id]?.team === t);
+    document.getElementById(`count-${t.toLowerCase()}`).textContent = `${tp.length} / 3`;
+    tp.forEach(pid => {
+      const p = players[pid];
+      const row = document.createElement('div');
+      row.className = 'player-row' + (pid === myId ? ' me' : '');
+      row.innerHTML = `
+        <span class="player-name-text">${p.name}</span>
+        <div class="player-badges">
+          ${pid === myId ? '<span class="badge badge-you">You</span>' : ''}
+          ${pid === hostId ? '<span class="badge badge-host">Host</span>' : ''}
+          ${isHost && pid !== myId ? `<button class="btn-ghost btn" style="padding:2px 8px;font-size:.7rem" onclick="socket.emit('assign_team',{targetId:'${pid}',team:null})">✕</button>` : ''}
+        </div>`;
+      list.appendChild(row);
+    });
+  });
+
+  // Start button
+  const canStart = pids.length === 6 && teamA.length === 3 && teamB.length === 3;
+  const btn = document.getElementById('btn-start');
+  if (isHost) { btn.classList.remove('hidden'); btn.disabled = !canStart; }
+  else btn.classList.add('hidden');
+
+  let status = `${pids.length}/6 players`;
+  if (pids.length < 6) status += ` — need ${6 - pids.length} more`;
+  else if (!canStart) status = 'Assign 3 players to each team';
+  else if (!isHost) status = 'Waiting for host to start…';
+  document.getElementById('lobby-status').textContent = status;
+}
+
+document.getElementById('btn-start').addEventListener('click', () => {
+  socket.emit('start_game');
+});
+
+// ── GAME ──
+function myTeam() { return myRoom.players[myId]?.team; }
+function isMyTurn() { return myRoom.turnPlayerId === myId; }
+
+function renderGame() {
+  const { players, playerOrder, turnPlayerId, sets, log, myHand } = myRoom;
+
+  // Scores
+  let sA = 0, sB = 0;
+  Object.values(sets).forEach(s => { if (s.wonBy==='A') sA++; else if (s.wonBy==='B') sB++; });
+  document.getElementById('score-a').textContent = sA;
+  document.getElementById('score-b').textContent = sB;
+
+  // Turn badge
+  const tp = players[turnPlayerId];
+  const isMT = turnPlayerId === myId;
+  document.getElementById('turn-badge').innerHTML = isMT
+    ? `<span class="turn-name">Your turn</span>`
+    : `<span class="turn-name">${tp?.name||'?'}</span>'s turn`;
+
+  // Sets strip
+  const strip = document.getElementById('sets-strip');
+  const wonEntries = Object.entries(sets);
+  if (wonEntries.length === 0) {
+    strip.innerHTML = '<span style="font-style:italic;color:var(--muted);font-size:.85rem">None yet</span>';
+  } else {
+    strip.innerHTML = wonEntries.map(([sid, s]) => {
+      const info = SETS.find(x => x.id === sid);
+      return `<span class="set-pill ${s.wonBy.toLowerCase()}">${info?.name||sid}</span>`;
+    }).join('');
+  }
+
+  // Players bar
+  renderPlayersBar();
+
+  // Hand
+  const hand = [...myHand].sort((a,b) => {
+    const sa = SET_MAP[a], sb = SET_MAP[b];
+    return sa < sb ? -1 : sa > sb ? 1 : a < b ? -1 : 1;
+  });
+  document.getElementById('hand-count').textContent = `${hand.length} card${hand.length!==1?'s':''}`;
+  const handEl = document.getElementById('my-hand');
+  handEl.innerHTML = '';
+  hand.forEach(c => handEl.appendChild(cardEl(c)));
+
+  // Action panel
+  renderActionPanel();
+
+  // Declare chips
+  renderDeclareChips();
+
+  // Log
+  const logList = document.getElementById('log-list');
+  logList.innerHTML = [...log].reverse().map(l =>
+    `<div class="log-entry">${l.text}</div>`
+  ).join('');
+}
+
+function renderPlayersBar() {
+  const { players, playerOrder, turnPlayerId } = myRoom;
+  const bar = document.getElementById('players-bar');
+  bar.innerHTML = '';
+  playerOrder.forEach(pid => {
+    const p = players[pid];
+    const isMe = pid === myId;
+    const isTurn = pid === turnPlayerId;
+    const isOpp = p.team !== myTeam();
+    const seat = document.createElement('div');
+    seat.className = `seat team-${(p.team||'').toLowerCase()}${isTurn?' turn':''}${isMe?' me':''}`;
+
+    // Selectable opponents when it's my turn
+    if (isOpp && isMyTurn() && p.cardCount > 0) {
+      seat.classList.add('selectable');
+      if (selOpp === pid) seat.classList.add('selected-opp');
+      seat.addEventListener('click', () => {
+        selOpp = pid;
+        renderActionPanel();
+        renderPlayersBar();
+      });
+    }
+
+    seat.innerHTML = `
+      ${isTurn ? '<div class="turn-dot"></div>' : ''}
+      <div class="seat-name">${p.name}</div>
+      <div class="seat-team ${(p.team||'').toLowerCase()}">Team ${p.team||'?'}</div>
+      <div class="seat-count">${p.cardCount} card${p.cardCount!==1?'s':''}</div>
+      ${p.disconnected ? '<div class="disconnected-badge">disconnected</div>' : ''}
+      ${isMe ? '<div style="font-size:.55rem;color:var(--gold);font-family:\'Cinzel\',serif;letter-spacing:1px;margin-top:2px">YOU</div>' : ''}`;
+    bar.appendChild(seat);
+  });
+}
+
+function renderActionPanel() {
+  const ap = document.getElementById('action-panel');
+  const wp = document.getElementById('waiting-panel');
+  const { players, turnPlayerId, sets, myHand } = myRoom;
+
+  if (!isMyTurn()) {
+    ap.classList.add('hidden');
+    wp.classList.remove('hidden');
+    const tp = players[turnPlayerId];
+    document.getElementById('waiting-text').innerHTML =
+      `Waiting for <b>${tp?.name||'?'}</b> to play…`;
+    return;
+  }
+
+  ap.classList.remove('hidden');
+  wp.classList.add('hidden');
+
+  const wonIds = Object.keys(sets);
+  const mySets = [...new Set(myHand.map(c => SET_MAP[c]))].filter(s => !wonIds.includes(s));
+
+  // Step 1: sets
+  const setsEl = document.getElementById('ask-sets');
+  setsEl.innerHTML = '';
+  mySets.forEach(sid => {
+    const info = SETS.find(s => s.id === sid);
+    const btn = document.createElement('button');
+    btn.className = 'set-chip-btn' + (selSet === sid ? ' sel' : '');
+    btn.textContent = info?.name || sid;
+    btn.addEventListener('click', () => {
+      selSet = sid; selCard = null; selOpp = null;
+      renderActionPanel(); renderPlayersBar();
+    });
+    setsEl.appendChild(btn);
+  });
+
+  // Step 2: cards in that set I don't have
+  const cardsEl = document.getElementById('ask-cards');
+  cardsEl.innerHTML = '';
+  if (selSet) {
+    const info = SETS.find(s => s.id === selSet);
+    const dontHave = (info?.cards || []).filter(c => !myHand.includes(c) && !wonIds.includes(SET_MAP[c]));
+    dontHave.forEach(c => {
+      const el = cardEl(c, { selectable: true, selected: selCard === c });
+      el.addEventListener('click', () => { selCard = c; renderActionPanel(); });
+      cardsEl.appendChild(el);
+    });
+  }
+
+  // Step 3: opponent
+  const od = document.getElementById('opp-display');
+  if (selOpp) {
+    const oppName = players[selOpp]?.name || '?';
+    od.innerHTML = `Asking: <b>${oppName}</b> <button class="btn-ghost btn" style="padding:2px 8px" onclick="selOpp=null;renderActionPanel();renderPlayersBar()">change</button>`;
+    od.style.color = 'var(--ink)';
+  } else {
+    od.textContent = 'Click an opponent in the players bar above';
+    od.style.color = 'var(--muted)';
+  }
+
+  // Confirm button
+  const askBtn = document.getElementById('btn-ask');
+  (selSet && selCard && selOpp) ? askBtn.classList.remove('hidden') : askBtn.classList.add('hidden');
+}
+
+document.getElementById('btn-ask').addEventListener('click', () => {
+  if (!selSet || !selCard || !selOpp) return;
+  socket.emit('ask_card', { toId: selOpp, card: selCard });
+  selSet = null; selCard = null; selOpp = null;
+});
+
+// ── DECLARE ──
+function renderDeclareChips() {
+  const { sets, myHand, players, playerOrder } = myRoom;
+  const el = document.getElementById('declare-chips');
+  el.innerHTML = '';
+  const wonIds = Object.keys(sets);
+  const myT = myTeam();
+  const teamPids = playerOrder.filter(pid => players[pid]?.team === myT);
+  const teamCards = teamPids.flatMap(pid => myRoom.players[pid] ? (myRoom.hands?.[pid] || []) : []);
+  // Use card counts from players since we only know our own hand server-side
+  // Show all undeclared sets where we have at least 1 card
+  SETS.forEach(info => {
+    if (wonIds.includes(info.id)) return;
+    const iHaveOne = myHand.some(c => SET_MAP[c] === info.id);
+    if (!iHaveOne) return;
+    const btn = document.createElement('button');
+    btn.className = 'declare-chip';
+    btn.textContent = info.name;
+    btn.addEventListener('click', () => openDeclareModal(info.id));
+    el.appendChild(btn);
+  });
+  if (el.children.length === 0) {
+    el.innerHTML = '<span style="font-style:italic;color:var(--muted);font-size:.9rem">No sets to declare yet — you need at least one card from a set</span>';
+  }
+}
+
+function openDeclareModal(setId) {
+  declareSetId = setId;
+  const info = SETS.find(s => s.id === setId);
+  document.getElementById('modal-set-name').textContent = info.name;
+
+  const { players, playerOrder, myHand } = myRoom;
+  const myT = myTeam();
+  const teamPids = playerOrder.filter(pid => players[pid]?.team === myT);
+
+  const rows = document.getElementById('modal-rows');
+  rows.innerHTML = '';
+  info.cards.forEach(card => {
+    const d = cardInfo(card);
+    const row = document.createElement('div');
+    row.className = 'declare-row';
+
+    // Default: if I have it, assign to me; else first teammate
+    const defaultPid = myHand.includes(card) ? myId : teamPids[0];
+
+    row.innerHTML = `
+      <span class="declare-card-label ${d.cls}">${d.rank} ${d.suit}</span>
+      <select class="declare-select" data-card="${card}">
+        ${teamPids.map(pid =>
+          `<option value="${pid}" ${pid===defaultPid?'selected':''}>${players[pid]?.name}</option>`
+        ).join('')}
+      </select>`;
+    rows.appendChild(row);
+  });
+
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+document.getElementById('btn-modal-cancel').addEventListener('click', () => {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  declareSetId = null;
+});
+
+document.getElementById('btn-modal-confirm').addEventListener('click', () => {
+  if (!declareSetId) return;
+  const assignment = {};
+  document.querySelectorAll('#modal-rows .declare-select').forEach(sel => {
+    assignment[sel.dataset.card] = sel.value;
+  });
+  socket.emit('declare_set', { setId: declareSetId, assignment });
+  document.getElementById('modal-overlay').classList.add('hidden');
+  declareSetId = null;
+});
+
+// ── RESULT ──
+function renderResult() {
+  const { sets } = myRoom;
+  let sA = 0, sB = 0;
+  Object.values(sets).forEach(s => { if (s.wonBy==='A') sA++; else if (s.wonBy==='B') sB++; });
+  document.getElementById('res-a').textContent = sA;
+  document.getElementById('res-b').textContent = sB;
+  const winner = sA > sB ? 'Team A' : sB > sA ? 'Team B' : null;
+  document.getElementById('result-title').textContent = winner ? `${winner} Wins!` : "It's a Tie!";
+  document.getElementById('result-sub').textContent = `${sA} sets vs ${sB} sets`;
+}
+
+document.getElementById('btn-again').addEventListener('click', () => {
+  showScreen('lobby-screen');
+  renderLobby();
+});
+
+// Init
+connect();
+</script>
+</body>
+</html>

@@ -774,7 +774,15 @@ function renderGame(){
   renderSeats();
 
   // Hand
-  const hand=[...myHand].sort((a,b)=>{const sa=SET_MAP[a],sb=SET_MAP[b];return sa<sb?-1:sa>sb?1:a<b?-1:1;});
+  const SET_ORDER = ['low_C','high_C','low_D','high_D','low_H','high_H','low_S','high_S','sevens_jokers'];
+  const RANK_ORDER = {'A':1,'2':2,'3':3,'4':4,'5':5,'6':6,'8':8,'9':9,'10':10,'J':11,'Q':12,'K':13,'RJ':14,'BJ':15};
+  function cardSortKey(card) {
+    const sid = SET_MAP[card];
+    const si = SET_ORDER.indexOf(sid);
+    const rank = card === 'RJ' ? 'RJ' : card === 'BJ' ? 'BJ' : card.slice(0, -1);
+    return si * 100 + (RANK_ORDER[rank] || 99);
+  }
+  const hand=[...myHand].sort((a,b)=>cardSortKey(a)-cardSortKey(b));
   document.getElementById('hand-count').textContent=`${hand.length} card${hand.length!==1?'s':''}`;
   const handEl=document.getElementById('my-hand');
   handEl.innerHTML='';
@@ -798,28 +806,39 @@ function renderSeats(){
   const center=document.getElementById('table-center');
   center.querySelectorAll('.player-seat').forEach(s=>s.remove());
   const cw=center.offsetWidth||600, ch=center.offsetHeight||400;
-  const myIndex=playerOrder.indexOf(myId);
   const n=playerOrder.length;
 
-  // Position slots: me always at bottom-center
-  // For 6 players: bottom, bottom-right, top-right, top, top-left, bottom-left
-  // For 4 players: bottom, right, top, left
-  // For 8 players: around the oval
+  // Build alternating order: interleave Team A and Team B
+  // so the table goes A, B, A, B, A, B with me always at bottom
+  const myTeamId=myTeam();
+  const oppTeamId=myTeamId==='A'?'B':'A';
+  const myTeammates=playerOrder.filter(pid=>players[pid]?.team===myTeamId);
+  const opponents=playerOrder.filter(pid=>players[pid]?.team===oppTeamId);
+  // Put me first in my team list
+  const myIdx=myTeammates.indexOf(myId);
+  if(myIdx>0) { myTeammates.splice(myIdx,1); myTeammates.unshift(myId); }
+  // Interleave: me, opp, teammate, opp, teammate, opp
+  const interleaved=[];
+  const maxLen=Math.max(myTeammates.length,opponents.length);
+  for(let i=0;i<maxLen;i++){
+    if(i<myTeammates.length) interleaved.push(myTeammates[i]);
+    if(i<opponents.length) interleaved.push(opponents[i]);
+  }
+  // interleaved[0] = me, place at bottom slot
   const getPos=(slot,total,W,H)=>{
-    const angle=(slot/total)*2*Math.PI - Math.PI/2; // start from top
+    const angle=(slot/total)*2*Math.PI - Math.PI/2;
     const rx=W*0.44, ry=H*0.52;
     const cx=W/2, cy=H/2;
     return {x:cx+rx*Math.cos(angle), y:cy+ry*Math.sin(angle)};
   };
+  const bottomSlot=Math.floor(n/2);
 
-  playerOrder.forEach((pid,ri)=>{
+  interleaved.forEach((pid,ri)=>{
     const p=players[pid];if(!p)return;
     const isMe=pid===myId;
     const isTurn=pid===turnPlayerId;
-    const isOpp=p.team!==myTeam();
-    // My slot is at the bottom (slot = n/2 which maps to bottom of oval)
-    const mySlot=Math.floor(n/2);
-    const slot=(((ri-myIndex)+n)%n+mySlot)%n;
+    const isOpp=p.team!==myTeamId;
+    const slot=(ri+bottomSlot)%n;
     const pos=getPos(slot,n,cw,ch);
 
     const seat=document.createElement('div');
@@ -962,14 +981,16 @@ function openDeclareAssignModal(setId){
 
   // Body rows — one per card
   const tbody=document.createElement('tbody');
+  const SUIT_NAMES_MAP={'S':'Spades','H':'Hearts','D':'Diamonds','C':'Clubs'};
   info.cards.forEach(card=>{
     const d=cardInfo(card);
-    const defaultPid=myHand.includes(card)?myId:teamPids[0];
-    const cardLabel=card==='RJ'?'Red Joker':card==='BJ'?'Black Joker':`${d.rank} of ${{'S':'Spades','H':'Hearts','D':'Diamonds','C':'Clubs'}[card.slice(-1)]}`;
+    const iHaveIt=myHand.includes(card);
+    const cardLabel=card==='RJ'?'Red Joker':card==='BJ'?'Black Joker':`${d.rank} of ${SUIT_NAMES_MAP[card.slice(-1)]}`;
     const tr=document.createElement('tr');
+    // Only pre-select if I have the card (assign to me); otherwise no default
     tr.innerHTML=`<td><span class="${d.cls}">${cardLabel}</span></td>
       ${teamPids.map(pid=>`
-        <td><input type="radio" class="declare-radio" name="card_${card}" data-card="${card}" value="${pid}" ${pid===defaultPid?'checked':''}></td>
+        <td><input type="radio" class="declare-radio" name="card_${card}" data-card="${card}" value="${pid}" ${iHaveIt && pid===myId?'checked':''}></td>
       `).join('')}`;
     tbody.appendChild(tr);
   });

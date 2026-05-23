@@ -980,7 +980,8 @@ function renderLobby() {
     const list=document.getElementById(`list-${t.toLowerCase()}`);
     list.innerHTML='';
     const tp=playerOrder.filter(id=>players[id]?.team===t);
-    document.getElementById(`ct-${t.toLowerCase()}`).textContent=`${tp.length} / 3`;
+    const half = Math.floor(playerOrder.length / 2);
+    document.getElementById(`ct-${t.toLowerCase()}`).textContent=`${tp.length} / ${half||3}`;
     tp.forEach(pid=>{
       const p=players[pid],isMe=pid===myId;
       const row=document.createElement('div');
@@ -997,15 +998,22 @@ function renderLobby() {
     });
   });
 
-  const canStart = playerOrder.length===6&&teamA.length===3&&teamB.length===3;
+  const total = playerOrder.length;
+  const teamsEqual = teamA.length === teamB.length;
+  const allAssigned = teamA.length + teamB.length === total;
+  const validCount = total >= 4 && total <= 8 && total % 2 === 0;
+  const canStart = validCount && teamsEqual && allAssigned && total >= 4;
+
   const btn=document.getElementById('btn-start');
   if (isHost){btn.classList.remove('hidden');btn.disabled=!canStart;}
   else btn.classList.add('hidden');
 
-  let status=`${playerOrder.length}/6 players`;
-  if (playerOrder.length<6) status+=` — need ${6-playerOrder.length} more`;
-  else if (!canStart) status='Assign 3 to each team';
-  else if (!isHost) status='Waiting for host to start…';
+  let status=`${total} player${total!==1?'s':''} — need 4, 6, or 8 total`;
+  if (!allAssigned) status=`${total} players — assign everyone to a team`;
+  else if (!teamsEqual) status='Teams must be equal size';
+  else if (!validCount) status='Need 4, 6, or 8 players total';
+  else if (canStart && !isHost) status='Waiting for host to start…';
+  else if (canStart && isHost) status=`Ready! ${total} players, ${teamA.length} per team`;
   document.getElementById('lobby-status').textContent=status;
 }
 

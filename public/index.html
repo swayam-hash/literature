@@ -595,7 +595,18 @@ function connect() {
 // ── HOME ──
 // Auto-fill code from URL ?room=CODE
 const urlCode = new URLSearchParams(window.location.search).get('room');
-if (urlCode) document.getElementById('inp-code').value = urlCode.toUpperCase();
+if (urlCode) {
+  document.getElementById('inp-code').value = urlCode.toUpperCase();
+  window.addEventListener('load', () => {
+    const joinBtn = document.getElementById('btn-join');
+    const codeInput = document.getElementById('inp-code');
+    codeInput.style.borderColor = 'var(--gold)';
+    codeInput.style.boxShadow = '0 0 0 3px rgba(240,192,64,.2)';
+    joinBtn.textContent = `Join Room ${urlCode.toUpperCase()}`;
+    joinBtn.style.background = 'linear-gradient(135deg,#e0a800,var(--gold2))';
+    joinBtn.style.color = '#111';
+  });
+}
 
 document.getElementById('btn-create').addEventListener('click',()=>{
   const name=document.getElementById('inp-name').value.trim();
@@ -688,8 +699,8 @@ function isMyTurn(){return myRoom.turnPlayerId===myId;}
 function renderGame(){
   const {players,playerOrder,turnPlayerId,sets,log,myHand,code}=myRoom;
 
-  // Invite URL
-  const shareUrl=`${location.origin}?room=${code}`;
+  // Invite URL — use current window URL which already has ?room=CODE
+  const shareUrl = window.location.href.split('#')[0];
   document.getElementById('invite-url').textContent=shareUrl;
 
   // Scores

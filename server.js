@@ -147,23 +147,23 @@ io.on('connection', (socket) => {
   const pid = socket.id;
 
   // Create room
-  socket.on('create_room', ({ name }) => {
+  socket.on('create_room', ({ name, avatar }) => {
     if (!name?.trim()) return socket.emit('error_msg', 'Name required');
-    const code = createRoom(pid, name.trim());
+    const code = createRoom(pid, name.trim(), avatar || '🎴');
     socket.join(code);
     socket.emit('joined_room', { code, playerId: pid });
     broadcastRoom(rooms[code]);
   });
 
   // Join room
-  socket.on('join_room', ({ name, code }) => {
+  socket.on('join_room', ({ name, code, avatar }) => {
     const room = rooms[code?.toUpperCase()];
     if (!room) return socket.emit('error_msg', 'Room not found');
     if (room.phase !== 'lobby') return socket.emit('error_msg', 'Game already started');
     if (Object.keys(room.players).length >= 6) return socket.emit('error_msg', 'Room is full (6 players max)');
     if (!name?.trim()) return socket.emit('error_msg', 'Name required');
 
-    room.players[pid] = { id: pid, name: name.trim(), team: null };
+    room.players[pid] = { id: pid, name: name.trim(), team: null, avatar: avatar || '🎴' };
     room.playerOrder.push(pid);
     socket.join(code.toUpperCase());
     socket.emit('joined_room', { code: code.toUpperCase(), playerId: pid });

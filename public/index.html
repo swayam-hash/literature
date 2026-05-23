@@ -571,7 +571,9 @@ function connect() {
   socket.on('joined_room', ({code,playerId})=>{
     myId=playerId;
     document.getElementById('code-display').textContent=code;
-    // Auto-join from URL if code param present
+    // Update browser URL so this page is shareable
+    const newUrl = `${location.origin}${location.pathname}?room=${code}`;
+    window.history.pushState({}, '', newUrl);
     showScreen('lobby-screen');
   });
   socket.on('room_update', state=>{

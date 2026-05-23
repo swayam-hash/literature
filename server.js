@@ -60,7 +60,11 @@ function dealCards(playerIds) {
   const shuffled = shuffle(deck);
   const hands = {};
   playerIds.forEach(id => (hands[id] = []));
-  shuffled.forEach((card, i) => hands[playerIds[i % 6]].push(card));
+  // Deal as evenly as possible, extras go to first players
+  shuffled.forEach((card, i) => {
+    const pid = playerIds[i % playerIds.length];
+    hands[pid].push(card);
+  });
   return hands;
 }
 
@@ -186,8 +190,13 @@ io.on('connection', (socket) => {
     const pids = room.playerOrder;
     const teamA = pids.filter(id => room.players[id].team === 'A');
     const teamB = pids.filter(id => room.players[id].team === 'B');
-    if (pids.length !== 6 || teamA.length !== 3 || teamB.length !== 3)
-      return socket.emit('error_msg', 'Need exactly 6 players, 3 per team');
+    const total = pids.length;
+    if (total < 4 || total > 8 || total % 2 !== 0)
+      return socket.emit('error_msg', 'Need 4, 6, or 8 players');
+    if (teamA.length !== teamB.length)
+      return socket.emit('error_msg', 'Teams must be equal size');
+    if (teamA.length + teamB.length !== total)
+      return socket.emit('error_msg', 'All players must be assigned to a team');
 
     room.hands = dealCards(pids);
     room.phase = 'playing';

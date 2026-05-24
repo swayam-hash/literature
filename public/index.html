@@ -584,7 +584,16 @@ function closeAllModals(){['ask-modal','set-picker-modal','declare-modal','rules
 // ── CONNECT ──
 function connect() {
   socket = io();
-  socket.on('connect', ()=>{ myId=socket.id; });
+  socket.on('connect', ()=>{
+    const prevId = myId;
+    myId=socket.id;
+    // If reconnecting into an active room, rejoin
+    if (prevId && prevId !== myId && myRoom?.code) {
+      const name = myRoom.players[prevId]?.name || document.getElementById('inp-name')?.value?.trim();
+      const avatar = myRoom.players[prevId]?.avatar || selectedAvatar;
+      socket.emit('rejoin_room', { code: myRoom.code, name, avatar });
+    }
+  });
   socket.on('joined_room', ({code,playerId})=>{
     myId=playerId;
     document.getElementById('code-display').textContent=code;
@@ -1052,12 +1061,35 @@ document.getElementById('btn-again').addEventListener('click',()=>{showScreen('l
 window.addEventListener('resize',()=>{if(myRoom?.phase==='playing') renderSeats();});
 
 // Fix glitch: re-render game when tab regains focus
-document.addEventListener('visibilitychange',()=>{
-  if(!document.hidden && myRoom?.phase==='playing') renderGame();
+// ── SYNC & RECONNECT ──
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    if (socket?.connected && myRoom) socket.emit('get_state');
+    else if (myRoom?.code) tryRejoin();
+  }
 });
-window.addEventListener('focus',()=>{
-  if(myRoom?.phase==='playing') renderGame();
+window.addEventListener('focus', () => {
+  if (socket?.connected && myRoom) socket.emit('get_state');
 });
+
+// Periodic sync every 5s as fallback for missed events
+setInterval(() => {
+  if (socket?.connected && myRoom?.phase === 'playing') socket.emit('get_state');
+}, 5000);
+
+function tryRejoin() {
+  const code = myRoom?.code;
+  const name = Object.values(myRoom?.players||{}).find(p=>p.id===myId)?.name
+               || document.getElementById('inp-name')?.value?.trim();
+  const avatar = Object.values(myRoom?.players||{}).find(p=>p.id===myId)?.avatar || selectedAvatar;
+  if (!code || !name) return;
+  if (!socket?.connected) {
+    socket.connect();
+    socket.once('connect', () => { myId = socket.id; socket.emit('rejoin_room', {code, name, avatar}); });
+  } else {
+    socket.emit('rejoin_room', {code, name, avatar});
+  }
+}
 
 connect();
 </script>

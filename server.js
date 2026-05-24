@@ -312,6 +312,33 @@ io.on('connection', (socket) => {
     broadcastRoom(room);
   });
 
+  // Client requests current room state (used on reconnect / tab focus)
+  socket.on('get_state', () => {
+    const room = Object.values(rooms).find(r => r.players[pid]);
+    if (room) socket.emit('room_update', roomPublicState(room, pid));
+  });
+
+  // Rejoin after reconnect — re-register player in room
+  socket.on('rejoin_room', ({ code, name, avatar }) => {
+    const room = rooms[code];
+    if (!room) return socket.emit('error_msg', 'Room not found');
+    // Update socket id mapping — old pid is gone, use new one
+    // Find if this name already exists in the room
+    const existingPid = Object.keys(room.players).find(p => room.players[p].name === name);
+    if (existingPid && existingPid !== pid) {
+      // Transfer player data to new socket id
+      room.players[pid] = { ...room.players[existingPid], id: pid };
+      delete room.players[existingPid];
+      room.playerOrder = room.playerOrder.map(p => p === existingPid ? pid : p);
+      if (room.hostId === existingPid) room.hostId = pid;
+      if (room.turnPlayerId === existingPid) room.turnPlayerId = pid; // won't exist but just in case
+      // Also fix hands
+      if (room.hands[existingPid]) { room.hands[pid] = room.hands[existingPid]; delete room.hands[existingPid]; }
+    }
+    socket.join(code);
+    socket.emit('room_update', roomPublicState(room, pid));
+  });
+
   // Disconnect
   socket.on('disconnect', () => {
     // Find which room they were in

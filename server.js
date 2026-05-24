@@ -449,10 +449,12 @@ io.on('connection', (socket) => {
   // This stays stable across reconnects unlike socket.id
   let pid = null;
 
-  socket.on('register', (persistentId) => {
+  socket.on('register', (persistentId, callback) => {
     pid = persistentId;
     socketToPlayer[socket.id] = pid;
     playerToSocket[pid] = socket.id;
+    // Ack so client knows registration is complete
+    if (typeof callback === 'function') callback({ ok: true });
     // If player was already in a room, re-sync them instantly
     const room = Object.values(rooms).find(r => r.players[pid]);
     if (room) {

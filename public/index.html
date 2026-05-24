@@ -741,12 +741,21 @@ function renderLobby(){
   const canStart=validCount&&teamsEqual&&allAssigned&&total>=4;
   const btn=document.getElementById('btn-start');
   const shuffleBtn=document.getElementById('btn-shuffle');
+  const addBotBtn=document.getElementById('btn-add-bot');
+  const removeBotBtn=document.getElementById('btn-remove-bots');
+  const hasBots=playerOrder.some(id=>players[id]?.isBot);
+  const botCount=playerOrder.filter(id=>players[id]?.isBot).length;
   if(isHost){
-    btn.classList.remove('hidden');btn.disabled=!canStart;
-    if(total>=4) shuffleBtn.classList.remove('hidden');
-    else shuffleBtn.classList.add('hidden');
+    btn.classList.remove('hidden'); btn.disabled=!canStart;
+    addBotBtn.classList.remove('hidden');
+    addBotBtn.disabled=total>=8;
+    addBotBtn.textContent=`🤖 Add Bot${botCount>0?' ('+botCount+')':''}`;
+    removeBotBtn.classList.toggle('hidden',!hasBots);
+    shuffleBtn.classList.toggle('hidden',total<4);
   } else {
     btn.classList.add('hidden');
+    addBotBtn.classList.add('hidden');
+    removeBotBtn.classList.add('hidden');
     shuffleBtn.classList.add('hidden');
   }
   let status=`${total} player${total!==1?'s':''} — need 4, 6, or 8 total`;

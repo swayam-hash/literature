@@ -338,6 +338,10 @@ function executeBotTurn(room) {
 // rooms: { [code]: Room }
 const rooms = {};
 
+// Socket ID <-> persistent player ID mapping
+const socketToPlayer = {};
+const playerToSocket = {};
+
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {

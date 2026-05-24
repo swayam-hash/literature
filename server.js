@@ -473,8 +473,12 @@ io.on('connection', (socket) => {
     if (!pid) return socket.emit('error_msg', 'Register first');
     if (!name?.trim()) return socket.emit('error_msg', 'Name required');
     const code = createRoom(pid, name.trim(), avatar || '🎴');
+    // Make sure playerToSocket is set before broadcasting
+    playerToSocket[pid] = socket.id;
     socket.join(code);
     socket.emit('joined_room', { code, playerId: pid });
+    // Directly emit to creator too, in case broadcastRoom misses timing
+    socket.emit('room_update', roomPublicState(rooms[code], pid));
     broadcastRoom(rooms[code]);
   });
 
@@ -492,8 +496,10 @@ io.on('connection', (socket) => {
       room.players[pid] = { id: pid, name: name.trim(), team: null, avatar: avatar || '🎴' };
       room.playerOrder.push(pid);
     }
+    playerToSocket[pid] = socket.id;
     socket.join(code.toUpperCase());
     socket.emit('joined_room', { code: code.toUpperCase(), playerId: pid });
+    socket.emit('room_update', roomPublicState(room, pid));
     broadcastRoom(room);
   });
 

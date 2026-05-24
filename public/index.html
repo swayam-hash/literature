@@ -371,9 +371,7 @@ input[type=text]::placeholder{color:var(--muted);font-weight:400;}
     <div class="lobby-footer">
       <p class="lobby-status" id="lobby-status">Waiting for players…</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end">
-        <button class="btn btn-outline hidden" id="btn-add-bot" style="max-width:160px">🤖 Add Bot</button>
-        <button class="btn btn-outline hidden" id="btn-remove-bots" style="max-width:160px">Remove Bots</button>
-        <button class="btn btn-outline hidden" id="btn-shuffle" style="max-width:180px">🔀 Shuffle Teams</button>
+<button class="btn btn-outline hidden" id="btn-shuffle" style="max-width:180px">🔀 Shuffle Teams</button>
         <button class="btn btn-gold hidden" id="btn-start" style="max-width:180px">Start Game</button>
       </div>
     </div>
@@ -622,7 +620,6 @@ function connect() {
   socket.on('room_update', state=>{
     myRoom=state;
     isHost=state.hostId===myId;
-    console.log('room_update: hostId=', state.hostId, 'myId=', myId, 'isHost=', isHost);
     if (state.phase==='lobby') renderLobby();
     else if (state.phase==='playing'){showScreen('game-screen');renderGame();}
     else if (state.phase==='ended'){showScreen('result-screen');renderResult();}
@@ -706,9 +703,8 @@ function renderLobby(){
   if (!unassigned.length){ul.innerHTML='<span style="color:var(--muted);font-style:italic;font-size:.9rem">All assigned!</span>';}
   else unassigned.forEach(pid=>{
     const p=players[pid],isMe=pid===myId;
-    const isBot=p.isBot;
     const chip=document.createElement('div');chip.className='unassigned-chip';
-    chip.innerHTML=`<span>${p.avatar||'🎴'}</span><span>${p.name}${isMe?' <em style="color:var(--muted)">(you)</em>':''}${isBot?' <em style="color:var(--team-a);font-size:.7rem">[BOT]</em>':''}</span>`;
+    chip.innerHTML=`<span>${p.avatar||'🎴'}</span><span>${p.name}${isMe?' <em style="color:var(--muted)">(you)</em>':''}</span>`;
     if(isHost) chip.innerHTML+=`<div class="assign-btns">
       <button class="assign-btn a" onclick="socket.emit('assign_team',{targetId:'${pid}',team:'A'})">A</button>
       <button class="assign-btn b" onclick="socket.emit('assign_team',{targetId:'${pid}',team:'B'})">B</button>
@@ -725,11 +721,11 @@ function renderLobby(){
       const p=players[pid],isMe=pid===myId;
       const row=document.createElement('div');row.className='player-row'+(isMe?' me':'');
       row.innerHTML=`<span class="player-row-avatar">${p.avatar||'🎴'}</span>
-        <span class="player-row-name">${p.name}${p.isBot?'<em style="font-size:.65rem;color:var(--team-a);margin-left:5px">[BOT]</em>':''}</span>
+        <span class="player-row-name">${p.name}</span>
         <div class="player-row-badges">
           ${isMe?'<span class="badge badge-you">You</span>':''}
           ${pid===hostId?'<span class="badge badge-host">Host</span>':''}
-          ${isHost&&!p.isBot&&pid!==myId?`<button class="btn-ghost btn" style="padding:2px 8px" onclick="socket.emit('assign_team',{targetId:'${pid}',team:null})">✕</button>`:''}
+          ${isHost&&pid!==myId?`<button class="btn-ghost btn" style="padding:2px 8px" onclick="socket.emit('assign_team',{targetId:'${pid}',team:null})">✕</button>`:''}
         </div>`;
       list.appendChild(row);
     });
@@ -741,21 +737,11 @@ function renderLobby(){
   const canStart=validCount&&teamsEqual&&allAssigned&&total>=4;
   const btn=document.getElementById('btn-start');
   const shuffleBtn=document.getElementById('btn-shuffle');
-  const addBotBtn=document.getElementById('btn-add-bot');
-  const removeBotBtn=document.getElementById('btn-remove-bots');
-  const hasBots=playerOrder.some(id=>players[id]?.isBot);
-  const botCount=playerOrder.filter(id=>players[id]?.isBot).length;
   if(isHost){
     btn.classList.remove('hidden'); btn.disabled=!canStart;
-    addBotBtn.classList.remove('hidden');
-    addBotBtn.disabled=total>=8;
-    addBotBtn.textContent=`🤖 Add Bot${botCount>0?' ('+botCount+')':''}`;
-    removeBotBtn.classList.toggle('hidden',!hasBots);
-    shuffleBtn.classList.toggle('hidden',total<4);
+    shuffleBtn.classList.toggle('hidden', total<4);
   } else {
     btn.classList.add('hidden');
-    addBotBtn.classList.add('hidden');
-    removeBotBtn.classList.add('hidden');
     shuffleBtn.classList.add('hidden');
   }
   let status=`${total} player${total!==1?'s':''} — need 4, 6, or 8 total`;
@@ -767,8 +753,6 @@ function renderLobby(){
   document.getElementById('lobby-status').textContent=status;
 }
 document.getElementById('btn-start').addEventListener('click',()=>socket.emit('start_game'));
-document.getElementById('btn-add-bot').addEventListener('click',()=>socket.emit('add_bot'));
-document.getElementById('btn-remove-bots').addEventListener('click',()=>socket.emit('remove_bots'));
 
 document.getElementById('btn-shuffle').addEventListener('click',()=>{
   if(!myRoom) return;
@@ -1108,10 +1092,7 @@ window.addEventListener('resize',()=>{if(myRoom?.phase==='playing') renderSeats(
 // Fix glitch: re-render game when tab regains focus
 // ── SYNC & RECONNECT ──
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) {
-    if (socket?.connected && myRoom) socket.emit('get_state');
-    else if (myRoom?.code) tryRejoin();
-  }
+  if (!document.hidden && socket?.connected && myRoom) socket.emit('get_state');
 });
 window.addEventListener('focus', () => {
   if (socket?.connected && myRoom) socket.emit('get_state');
@@ -1122,19 +1103,6 @@ setInterval(() => {
   if (socket?.connected && myRoom?.phase === 'playing') socket.emit('get_state');
 }, 5000);
 
-function tryRejoin() {
-  const code = myRoom?.code;
-  const name = Object.values(myRoom?.players||{}).find(p=>p.id===myId)?.name
-               || document.getElementById('inp-name')?.value?.trim();
-  const avatar = Object.values(myRoom?.players||{}).find(p=>p.id===myId)?.avatar || selectedAvatar;
-  if (!code || !name) return;
-  if (!socket?.connected) {
-    socket.connect();
-    socket.once('connect', () => { myId = socket.id; socket.emit('rejoin_room', {code, name, avatar}); });
-  } else {
-    socket.emit('rejoin_room', {code, name, avatar});
-  }
-}
 
 connect();
 </script>

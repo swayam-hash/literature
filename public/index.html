@@ -581,23 +581,30 @@ function showToast(msg,type='info',ms=2800){const t=document.getElementById('toa
 function showError(id,msg){const el=document.getElementById(id);el.textContent=msg;el.classList.remove('hidden');setTimeout(()=>el.classList.add('hidden'),3500);}
 function closeAllModals(){['ask-modal','set-picker-modal','declare-modal','rules-modal'].forEach(id=>document.getElementById(id).classList.add('hidden'));}
 
+// ── PERSISTENT PLAYER ID ──
+// Store a stable ID in localStorage so reconnects don't lose your identity
+function getOrCreatePlayerId() {
+  let id = localStorage.getItem('lit_player_id');
+  if (!id) {
+    id = 'p_' + Math.random().toString(36).slice(2, 10) + '_' + Date.now();
+    localStorage.setItem('lit_player_id', id);
+  }
+  return id;
+}
+const PERSISTENT_ID = getOrCreatePlayerId();
+
 // ── CONNECT ──
 function connect() {
-  socket = io();
+  socket = io({ reconnection: true, reconnectionAttempts: Infinity, reconnectionDelay: 1000, reconnectionDelayMax: 5000 });
+  
   socket.on('connect', ()=>{
-    const prevId = myId;
-    myId=socket.id;
-    // If reconnecting into an active room, rejoin
-    if (prevId && prevId !== myId && myRoom?.code) {
-      const name = myRoom.players[prevId]?.name || document.getElementById('inp-name')?.value?.trim();
-      const avatar = myRoom.players[prevId]?.avatar || selectedAvatar;
-      socket.emit('rejoin_room', { code: myRoom.code, name, avatar });
-    }
+    myId = PERSISTENT_ID;
+    // Always register persistent ID with server on every connect/reconnect
+    socket.emit('register', PERSISTENT_ID);
   });
   socket.on('joined_room', ({code,playerId})=>{
-    myId=playerId;
+    myId = PERSISTENT_ID; // always use persistent id
     document.getElementById('code-display').textContent=code;
-    // Update browser URL so this page is shareable
     const newUrl = `${location.origin}${location.pathname}?room=${code}`;
     window.history.pushState({}, '', newUrl);
     showScreen('lobby-screen');
@@ -673,8 +680,9 @@ function renderLobby(){
   if (!unassigned.length){ul.innerHTML='<span style="color:var(--muted);font-style:italic;font-size:.9rem">All assigned!</span>';}
   else unassigned.forEach(pid=>{
     const p=players[pid],isMe=pid===myId;
+    const isBot=p.isBot;
     const chip=document.createElement('div');chip.className='unassigned-chip';
-    chip.innerHTML=`<span>${p.avatar||'🎴'}</span><span>${p.name}${isMe?' <em style="color:var(--muted)">(you)</em>':''}</span>`;
+    chip.innerHTML=`<span>${p.avatar||'🎴'}</span><span>${p.name}${isMe?' <em style="color:var(--muted)">(you)</em>':''}${isBot?' <em style="color:var(--team-a);font-size:.7rem">[BOT]</em>':''}</span>`;
     if(isHost) chip.innerHTML+=`<div class="assign-btns">
       <button class="assign-btn a" onclick="socket.emit('assign_team',{targetId:'${pid}',team:'A'})">A</button>
       <button class="assign-btn b" onclick="socket.emit('assign_team',{targetId:'${pid}',team:'B'})">B</button>
@@ -691,11 +699,11 @@ function renderLobby(){
       const p=players[pid],isMe=pid===myId;
       const row=document.createElement('div');row.className='player-row'+(isMe?' me':'');
       row.innerHTML=`<span class="player-row-avatar">${p.avatar||'🎴'}</span>
-        <span class="player-row-name">${p.name}</span>
+        <span class="player-row-name">${p.name}${p.isBot?'<em style="font-size:.65rem;color:var(--team-a);margin-left:5px">[BOT]</em>':''}</span>
         <div class="player-row-badges">
           ${isMe?'<span class="badge badge-you">You</span>':''}
           ${pid===hostId?'<span class="badge badge-host">Host</span>':''}
-          ${isHost&&pid!==myId?`<button class="btn-ghost btn" style="padding:2px 8px" onclick="socket.emit('assign_team',{targetId:'${pid}',team:null})">✕</button>`:''}
+          ${isHost&&!p.isBot&&pid!==myId?`<button class="btn-ghost btn" style="padding:2px 8px" onclick="socket.emit('assign_team',{targetId:'${pid}',team:null})">✕</button>`:''}
         </div>`;
       list.appendChild(row);
     });
@@ -724,6 +732,8 @@ function renderLobby(){
   document.getElementById('lobby-status').textContent=status;
 }
 document.getElementById('btn-start').addEventListener('click',()=>socket.emit('start_game'));
+document.getElementById('btn-add-bot').addEventListener('click',()=>socket.emit('add_bot'));
+document.getElementById('btn-remove-bots').addEventListener('click',()=>socket.emit('remove_bots'));
 
 document.getElementById('btn-shuffle').addEventListener('click',()=>{
   if(!myRoom) return;

@@ -370,7 +370,9 @@ input[type=text]::placeholder{color:var(--muted);font-weight:400;}
     </div>
     <div class="lobby-footer">
       <p class="lobby-status" id="lobby-status">Waiting for players…</p>
-      <div style="display:flex;gap:10px;">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end">
+        <button class="btn btn-outline hidden" id="btn-add-bot" style="max-width:160px">🤖 Add Bot</button>
+        <button class="btn btn-outline hidden" id="btn-remove-bots" style="max-width:160px">Remove Bots</button>
         <button class="btn btn-outline hidden" id="btn-shuffle" style="max-width:180px">🔀 Shuffle Teams</button>
         <button class="btn btn-gold hidden" id="btn-start" style="max-width:180px">Start Game</button>
       </div>

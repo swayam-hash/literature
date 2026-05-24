@@ -574,6 +574,7 @@ function makeCard(card, opts={}) {
 let socket, myId=null, myRoom=null, isHost=false;
 let askTargetId=null, askSelectedCard=null;
 let declareSetId=null;
+let pendingAction=null;
 
 // ── UTILS ──
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
@@ -594,13 +595,20 @@ function getOrCreatePlayerId() {
 const PERSISTENT_ID = getOrCreatePlayerId();
 
 // ── CONNECT ──
+let registered = false;
+
 function connect() {
   socket = io({ reconnection: true, reconnectionAttempts: Infinity, reconnectionDelay: 1000, reconnectionDelayMax: 5000 });
-  
+
   socket.on('connect', ()=>{
     myId = PERSISTENT_ID;
-    // Always register persistent ID with server on every connect/reconnect
-    socket.emit('register', PERSISTENT_ID);
+    registered = false;
+    // Register with server — use callback to confirm before doing anything else
+    socket.emit('register', PERSISTENT_ID, (ack) => {
+      registered = true;
+      // Flush any queued actions
+      if (pendingAction) { pendingAction(); pendingAction = null; }
+    });
   });
   socket.on('joined_room', ({code,playerId})=>{
     myId = PERSISTENT_ID; // always use persistent id
@@ -645,10 +653,17 @@ document.getElementById('btn-create').addEventListener('click',()=>{
   const name=document.getElementById('inp-name').value.trim();
   if (!name) return showError('home-err','Enter your name');
   const btn=document.getElementById('btn-create');
-  btn.textContent='Creating…';btn.disabled=true;
-  if (!socket||!socket.connected){connect();socket.once('connect',()=>socket.emit('create_room',{name,avatar:selectedAvatar}));}
-  else socket.emit('create_room',{name,avatar:selectedAvatar});
-  setTimeout(()=>{btn.textContent='Create Private Room';btn.disabled=false;},5000);
+  btn.textContent='Creating…'; btn.disabled=true;
+  const doCreate = () => socket.emit('create_room',{name,avatar:selectedAvatar});
+  if (!socket||!socket.connected){
+    connect();
+    pendingAction = doCreate;
+  } else if (!registered) {
+    pendingAction = doCreate;
+  } else {
+    doCreate();
+  }
+  setTimeout(()=>{btn.textContent='Create Private Room';btn.disabled=false;},6000);
 });
 
 document.getElementById('btn-join').addEventListener('click',()=>{
@@ -657,10 +672,17 @@ document.getElementById('btn-join').addEventListener('click',()=>{
   if (!name) return showError('home-err','Enter your name');
   if (code.length!==6) return showError('home-err','Enter a 6-letter code');
   const btn=document.getElementById('btn-join');
-  btn.textContent='Joining…';btn.disabled=true;
-  if (!socket||!socket.connected){connect();socket.once('connect',()=>socket.emit('join_room',{name,code,avatar:selectedAvatar}));}
-  else socket.emit('join_room',{name,code,avatar:selectedAvatar});
-  setTimeout(()=>{btn.textContent='Join Game';btn.disabled=false;},5000);
+  btn.textContent='Joining…'; btn.disabled=true;
+  const doJoin = () => socket.emit('join_room',{name,code,avatar:selectedAvatar});
+  if (!socket||!socket.connected){
+    connect();
+    pendingAction = doJoin;
+  } else if (!registered) {
+    pendingAction = doJoin;
+  } else {
+    doJoin();
+  }
+  setTimeout(()=>{btn.textContent='Join Game';btn.disabled=false;},6000);
 });
 
 document.getElementById('inp-code').addEventListener('input',e=>e.target.value=e.target.value.toUpperCase());

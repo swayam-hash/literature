@@ -620,7 +620,9 @@ function connect() {
     showScreen('lobby-screen');
   });
   socket.on('room_update', state=>{
-    myRoom=state; isHost=state.hostId===myId;
+    myRoom=state;
+    isHost=state.hostId===myId;
+    console.log('room_update: hostId=', state.hostId, 'myId=', myId, 'isHost=', isHost);
     if (state.phase==='lobby') renderLobby();
     else if (state.phase==='playing'){showScreen('game-screen');renderGame();}
     else if (state.phase==='ended'){showScreen('result-screen');renderResult();}
